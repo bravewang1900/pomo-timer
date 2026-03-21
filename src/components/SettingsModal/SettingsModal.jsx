@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { playNotification } from '../../utils/sound'
 import styles from './SettingsModal.module.css'
 
-function SettingsModal({ isOpen, onClose, settings, onSave }) {
+function SettingsModal({ isOpen, labels, onClose, settings, onSave }) {
   const [formState, setFormState] = useState(settings)
 
   useEffect(() => {
@@ -33,10 +33,10 @@ function SettingsModal({ isOpen, onClose, settings, onSave }) {
           event.stopPropagation()
         }}
       >
-        <h2 className={styles.title}>设置</h2>
+        <h2 className={styles.title}>{labels.title}</h2>
         <div className={styles.form}>
           <label className={styles.field}>
-            <span className={styles.label}>专注时长（分钟）</span>
+            <span className={styles.label}>{labels.workMinutes}</span>
             <input
               className={styles.input}
               type="number"
@@ -48,7 +48,7 @@ function SettingsModal({ isOpen, onClose, settings, onSave }) {
           </label>
 
           <label className={styles.field}>
-            <span className={styles.label}>短休息时长（分钟）</span>
+            <span className={styles.label}>{labels.shortBreakMinutes}</span>
             <input
               className={styles.input}
               type="number"
@@ -62,7 +62,7 @@ function SettingsModal({ isOpen, onClose, settings, onSave }) {
           </label>
 
           <label className={styles.field}>
-            <span className={styles.label}>长休息时长（分钟）</span>
+            <span className={styles.label}>{labels.longBreakMinutes}</span>
             <input
               className={styles.input}
               type="number"
@@ -74,7 +74,7 @@ function SettingsModal({ isOpen, onClose, settings, onSave }) {
           </label>
 
           <label className={styles.field}>
-            <span className={styles.label}>几个番茄后长休息</span>
+            <span className={styles.label}>{labels.pomosBeforeLongBreak}</span>
             <input
               className={styles.input}
               type="number"
@@ -88,7 +88,7 @@ function SettingsModal({ isOpen, onClose, settings, onSave }) {
           </label>
 
           <label className={styles.field}>
-            <span className={styles.label}>音量</span>
+            <span className={styles.label}>{labels.volume}</span>
             <div className={styles.rangeRow}>
               <input
                 className={styles.range}
@@ -105,7 +105,7 @@ function SettingsModal({ isOpen, onClose, settings, onSave }) {
                   playNotification(formState.volume)
                 }}
               >
-                试听
+                {labels.preview}
               </button>
               <span className={styles.value}>{formState.volume}</span>
             </div>
@@ -117,14 +117,14 @@ function SettingsModal({ isOpen, onClose, settings, onSave }) {
               className={styles.secondaryButton}
               onClick={onClose}
             >
-              取消
+              {labels.cancel}
             </button>
             <button
               type="button"
               className={styles.primaryButton}
               onClick={handleSave}
             >
-              保存
+              {labels.save}
             </button>
           </div>
         </div>

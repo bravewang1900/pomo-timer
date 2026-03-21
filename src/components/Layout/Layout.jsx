@@ -1,6 +1,13 @@
 import styles from './Layout.module.css'
 
-function Layout({ children, onGoHome, onOpenSettings, onToggleStats }) {
+function Layout({
+  children,
+  labels,
+  onGoHome,
+  onOpenSettings,
+  onToggleStats,
+  onToggleLanguage,
+}) {
   return (
     <div className={styles.layout}>
       <header className={styles.header}>
@@ -13,14 +20,21 @@ function Layout({ children, onGoHome, onOpenSettings, onToggleStats }) {
             className={styles.iconButton}
             onClick={onOpenSettings}
           >
-            ⚙️ 设置
+            {labels.settings}
           </button>
           <button
             type="button"
             className={styles.iconButton}
             onClick={onToggleStats}
           >
-            📊 统计
+            {labels.stats}
+          </button>
+          <button
+            type="button"
+            className={`${styles.iconButton} ${styles.languageButton}`}
+            onClick={onToggleLanguage}
+          >
+            {labels.language}
           </button>
         </div>
       </header>

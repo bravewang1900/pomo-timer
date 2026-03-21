@@ -52,6 +52,11 @@
   transition: 0.15s ease;
 }
 
+.languageButton {
+  min-width: 64px;
+  text-align: center;
+}
+
 .iconButton:hover {
   border-color: var(--color-primary);
 }

@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
 }
 
 .tabs {
@@ -34,95 +34,353 @@
   right: 0;
   bottom: 0;
   height: 2px;
-  background-color: var(--color-primary);
+  background-color: var(--tab-accent, var(--color-primary));
 }
 
 .progress {
+  --track-color: rgba(56, 47, 44, 0.08);
+  --track-inner-color: rgba(56, 47, 44, 0.05);
+  --disk-glow-color: 224, 82, 82;
   position: relative;
-  width: 240px;
-  height: 240px;
+  display: grid;
+  place-items: center;
+  width: 268px;
+  height: 268px;
+  isolation: isolate;
+}
+
+.progressFrame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 268px;
+  height: 268px;
+}
+
+.progressFrame::after {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0) 52%, rgba(249, 244, 240, 0.1) 66%, rgba(243, 236, 231, 0.18) 76%, rgba(255, 255, 255, 0) 90%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.halo {
+  position: absolute;
+  inset: -18px;
+  border-radius: 50%;
+  z-index: 0;
+  animation:
+    pulseBreath var(--timer-pulse-duration, 4s) ease-in-out infinite,
+    haloDrift 8s ease-in-out infinite;
+  animation-play-state: paused;
+  filter: blur(24px);
+  opacity: 1;
+  will-change: transform, opacity, filter;
+  transition:
+    background 260ms ease,
+    opacity 260ms ease,
+    filter 260ms ease;
+  background:
+    radial-gradient(circle, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.66) 0%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.42) 22%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.24) 42%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.12) 60%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.04) 78%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0) 94%);
+}
+
+.haloRunning {
+  animation-play-state: running;
+}
+
+.haloPaused {
+  animation-play-state: paused;
+}
+
+.shell,
+.innerPulse,
+.innerGlow,
+.centerDisk {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.shell {
+  inset: 10px;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.92), rgba(250, 247, 244, 0.84) 50%, rgba(241, 236, 232, 0.78) 74%, rgba(233, 227, 222, 0.72) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    inset 0 -18px 28px rgba(70, 47, 35, 0.035),
+    0 20px 42px rgba(32, 18, 12, 0.045);
+  z-index: 0;
+}
+
+.innerPulse {
+  width: 144px;
+  height: 144px;
+  animation:
+    innerPulse var(--timer-inner-pulse-duration, 2.6s) ease-in-out infinite,
+    innerPulseScale var(--timer-inner-pulse-duration, 2.6s) ease-out infinite;
+  animation-play-state: paused;
+  z-index: 1;
+  opacity: 0;
+  filter: blur(16px);
+  mix-blend-mode: multiply;
+  will-change: transform, opacity;
+  transition:
+    background 260ms ease,
+    opacity 220ms ease,
+    filter 260ms ease;
+  background:
+    radial-gradient(circle, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.84) 0%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.56) 22%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.3) 44%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.14) 64%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0) 88%);
+}
+
+.innerPulse.running {
+  animation-play-state: running;
+}
+
+.innerPulse.paused {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+.innerGlow {
+  inset: 30px;
+  transition:
+    background 260ms ease,
+    transform 260ms ease,
+    opacity 260ms ease;
+  background:
+    radial-gradient(circle, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.2) 0%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.13) 24%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.05) 48%, rgba(255, 255, 255, 0) 78%);
+  z-index: 1;
+}
+
+.progressRunning .innerGlow {
+  animation: innerGlowBreath ease-in-out infinite;
+}
+
+.centerDisk {
+  inset: 42px;
+  transition:
+    box-shadow 260ms ease,
+    background 260ms ease;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.9), rgba(250, 247, 244, 0.7) 54%, rgba(239, 234, 229, 0.42) 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.68),
+    inset 0 -16px 30px rgba(var(--disk-glow-color), 0.05);
+  z-index: 1;
 }
 
 .progressSvg {
+  position: relative;
+  z-index: 3;
   display: block;
-  width: 240px;
-  height: 240px;
+  width: 268px;
+  height: 268px;
+  overflow: visible;
   transform: rotate(-90deg);
 }
 
-.track {
+.track,
+.trackInner,
+.indicator,
+.indicatorGhost {
   fill: none;
-  stroke: var(--color-border);
-  stroke-width: 10;
+}
+
+.track {
+  stroke: var(--track-color);
+  stroke-width: 7;
+  opacity: 0.72;
+}
+
+.trackInner {
+  stroke: var(--track-inner-color);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 9;
+  opacity: 0.54;
 }
 
 .indicator {
-  fill: none;
-  stroke: var(--color-primary);
-  stroke-width: 10;
+  stroke: var(--timer-accent, #E05252);
+  stroke-width: 9;
   stroke-linecap: round;
+  shape-rendering: geometricPrecision;
   transition:
-    stroke-dashoffset 0.3s linear,
-    stroke 0.15s ease;
+    stroke 260ms ease,
+    filter 0.2s ease,
+    stroke-width 0.2s ease;
+  will-change: stroke-dashoffset, filter;
+  filter:
+    drop-shadow(0 0 7px rgba(var(--timer-accent-rgb, 224, 82, 82), 0.24))
+    drop-shadow(0 0 20px rgba(var(--timer-accent-rgb, 224, 82, 82), 0.16));
 }
 
-.time {
+.indicatorGhost {
+  stroke: rgba(var(--timer-accent-rgb, 224, 82, 82), 0.2);
+  stroke-width: 14px;
+  stroke-linecap: round;
+  opacity: 0.42;
+  shape-rendering: geometricPrecision;
+  transition:
+    stroke 260ms ease,
+    opacity 260ms ease;
+}
+
+.timeBlock {
   position: absolute;
   inset: 0;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.time {
   font-family: var(--font-display);
-  font-size: 48px;
+  font-size: 52px;
   color: var(--color-text);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  transition:
+    color 260ms ease,
+    opacity 260ms ease,
+    transform 260ms ease,
+    text-shadow 260ms ease;
+}
+
+.progressShortBreak,
+.progressLongBreak {
+  --disk-glow-color: 76, 175, 80;
+  --track-color: rgba(64, 92, 68, 0.06);
+  --track-inner-color: rgba(64, 92, 68, 0.04);
+}
+
+.progressRunning .innerGlow {
+  animation: innerGlowBreath var(--timer-pulse-duration, 4s) ease-in-out infinite;
+}
+
+.progressWork {
+  --timer-inner-pulse-duration: 2.8s;
+}
+
+.progressShortBreak,
+.progressLongBreak {
+  --timer-inner-pulse-duration: 4.2s;
+}
+
+.progressShortBreak .shell,
+.progressLongBreak .shell {
+  background:
+    radial-gradient(circle at 34% 28%, rgba(252, 255, 252, 0.92), rgba(244, 249, 244, 0.8) 50%, rgba(232, 240, 233, 0.72) 74%, rgba(223, 233, 224, 0.64) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    inset 0 -20px 34px rgba(54, 87, 60, 0.03),
+    0 18px 36px rgba(28, 44, 31, 0.04);
+}
+
+.progressShortBreak .innerGlow,
+.progressLongBreak .innerGlow {
+  inset: 24px;
+  background:
+    radial-gradient(circle, rgba(76, 175, 80, 0.12) 0%, rgba(76, 175, 80, 0.08) 28%, rgba(76, 175, 80, 0.035) 54%, rgba(255, 255, 255, 0) 82%);
+}
+
+.progressShortBreak .centerDisk,
+.progressLongBreak .centerDisk {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(251, 255, 251, 0.84), rgba(244, 249, 244, 0.62) 56%, rgba(229, 237, 229, 0.34) 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.62),
+    inset 0 -18px 34px rgba(76, 175, 80, 0.045);
+}
+
+.progressShortBreak .time,
+.progressLongBreak .time {
+  color: color-mix(in srgb, var(--color-text) 88%, #4CAF50);
+  opacity: 0.92;
+  transform: translateY(1px);
+  text-shadow: 0 1px 10px rgba(76, 175, 80, 0.06);
+}
+
+.progressShortBreak .halo,
+.progressLongBreak .halo {
+  opacity: 0.9;
 }
 
 .controls {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
+  margin-top: -2px;
 }
 
-.primaryButton {
-  border: 1px solid var(--color-primary);
-  background-color: var(--color-primary);
-  color: #fff;
-  border-radius: 999px;
+.btn {
+  min-width: 136px;
   padding: 12px 28px;
-  font-family: var(--font-body);
-  font-size: 16px;
+  border-radius: 28px;
+  font-family: 'Noto Sans SC', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 2.2px;
+  text-align: center;
+  border: 1.5px solid transparent;
   cursor: pointer;
-  transition: 0.15s ease;
+  transition:
+    opacity 0.15s,
+    transform 0.1s,
+    background 0.3s,
+    border-color 0.3s,
+    color 0.3s;
 }
 
-.secondaryButton {
-  border: 1px solid var(--color-border);
+.btn:active {
+  opacity: 0.8;
+  transform: scale(0.97);
+}
+
+.btnPrimary {
+  background: var(--color);
+  color: white;
+  border-color: var(--color);
+  transition:
+    opacity 0.15s,
+    transform 0.1s,
+    background-color 260ms ease,
+    border-color 260ms ease,
+    color 260ms ease,
+    filter 260ms ease;
+}
+
+.btnSecondary {
   background: transparent;
-  color: var(--color-text);
-  border-radius: 999px;
-  padding: 12px 28px;
-  font-family: var(--font-body);
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.15s ease;
+  color: var(--color);
+  border-color: var(--color);
+  transition:
+    opacity 0.15s,
+    transform 0.1s,
+    background-color 260ms ease,
+    border-color 260ms ease,
+    color 260ms ease;
 }
 
 .tab:hover {
   color: var(--color-text);
 }
 
-.tab:active,
-.primaryButton:active,
-.secondaryButton:active {
+.tab:active {
   transform: translateY(1px);
 }
 
-.primaryButton:hover {
+.btnPrimary:hover {
   filter: brightness(0.96);
 }
 
-.secondaryButton:hover {
-  border-color: var(--color-primary);
+.btnSecondary:hover {
+  background: color-mix(in srgb, var(--color) 8%, transparent);
 }
 
 .taskHint {
@@ -132,9 +390,74 @@
   font-size: 14px;
 }
 
+@keyframes pulseBreath {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.22);
+    opacity: 0.3;
+  }
+}
+
+@keyframes innerPulse {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+
+  50% {
+    opacity: 0.72;
+  }
+}
+
+@keyframes innerPulseScale {
+  0%,
+  100% {
+    transform: scale(0.12);
+  }
+
+  50% {
+    transform: scale(1.72);
+  }
+}
+
+@keyframes innerGlowBreath {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(0.97);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes haloDrift {
+  0%,
+  100% {
+    filter: blur(24px);
+  }
+
+  50% {
+    filter: blur(32px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .halo {
+    animation: none;
+  }
+}
+
 @media (max-width: 480px) {
   .timer {
-    gap: 24px;
+    gap: 20px;
   }
 
   .tabs {
@@ -145,28 +468,50 @@
     font-size: 15px;
   }
 
-  .progress {
-    width: 180px;
-    height: 180px;
+  .progress,
+  .progressFrame {
+    width: 224px;
+    height: 224px;
+  }
+
+  .progressFrame::after {
+    inset: 10px;
+  }
+
+  .halo {
+    inset: -10px;
+    filter: blur(18px);
+  }
+
+  .innerPulse {
+    width: 124px;
+    height: 124px;
+    filter: blur(14px);
   }
 
   .progressSvg {
-    width: 180px;
-    height: 180px;
+    width: 224px;
+    height: 224px;
+  }
+
+  .centerDisk {
+    inset: 36px;
   }
 
   .time {
-    font-size: 36px;
+    font-size: 40px;
   }
 
   .controls {
     width: 100%;
     justify-content: center;
+    gap: 10px;
   }
 
-  .primaryButton,
-  .secondaryButton {
-    padding: 10px 20px;
-    font-size: 15px;
+  .btn {
+    min-width: 118px;
+    padding: 10px 18px;
+    font-size: 12px;
+    letter-spacing: 1.8px;
   }
 }

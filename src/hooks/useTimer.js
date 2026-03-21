@@ -2,9 +2,16 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { playNotification, playTick } from '../utils/sound'
 
 const MODE_LABELS = {
-  work: '专注中',
-  shortBreak: '短休息',
-  longBreak: '长休息',
+  zh: {
+    work: '专注中',
+    shortBreak: '短休息',
+    longBreak: '长休息',
+  },
+  en: {
+    work: 'Focus',
+    shortBreak: 'Short Break',
+    longBreak: 'Long Break',
+  },
 }
 
 function getModeSeconds(settings, mode) {
@@ -24,8 +31,9 @@ function getModeSeconds(settings, mode) {
 }
 
 function formatTime(value) {
-  const minutes = Math.floor(value / 60)
-  const seconds = value % 60
+  const wholeSeconds = Math.max(0, Math.ceil(value))
+  const minutes = Math.floor(wholeSeconds / 60)
+  const seconds = wholeSeconds % 60
 
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
@@ -82,6 +90,7 @@ function advanceTimerState(state, elapsedSeconds, settings, onStageComplete) {
 }
 
 export function useTimer(settings) {
+  const locale = settings.locale === 'en' ? 'en' : 'zh'
   const normalizedSettings = useMemo(
     () => ({
       workMinutes: settings.workMinutes,
@@ -108,6 +117,7 @@ export function useTimer(settings) {
   const [completedPomos, setCompletedPomos] = useState(0)
   const hasInitializedAudioRef = useRef(false)
   const hiddenAtRef = useRef(null)
+  const endTimeRef = useRef(null)
   const stateRef = useRef({
     mode: 'work',
     timeLeft: getModeSeconds(normalizedSettings, 'work'),
@@ -115,6 +125,7 @@ export function useTimer(settings) {
     isRunning: false,
   })
   const settingsRef = useRef(normalizedSettings)
+  const previousSettingsRef = useRef(normalizedSettings)
 
   useEffect(() => {
     stateRef.current = {
@@ -130,22 +141,49 @@ export function useTimer(settings) {
   }, [normalizedSettings])
 
   useEffect(() => {
+    const previousSettings = previousSettingsRef.current
+    const previousTotal = getModeSeconds(previousSettings, mode)
+    const nextTotal = getModeSeconds(normalizedSettings, mode)
+
+    if (previousTotal !== nextTotal) {
+      setTimeLeft((current) => {
+        const elapsedSeconds = Math.max(0, previousTotal - current)
+        return Math.max(0, nextTotal - elapsedSeconds)
+      })
+    }
+
+    previousSettingsRef.current = normalizedSettings
+  }, [mode, normalizedSettings])
+
+  useEffect(() => {
     if (!isRunning) {
+      endTimeRef.current = null
       return undefined
     }
 
-    const intervalId = window.setInterval(() => {
-      setTimeLeft((current) => {
-        if (current <= 1) {
-          return 0
-        }
+    if (!endTimeRef.current) {
+      endTimeRef.current = performance.now() + stateRef.current.timeLeft * 1000
+    }
 
-        return current - 1
-      })
-    }, 1000)
+    let frameId = 0
+
+    const tick = () => {
+      const remainingSeconds = Math.max(
+        0,
+        (endTimeRef.current - performance.now()) / 1000,
+      )
+
+      setTimeLeft(remainingSeconds)
+
+      if (remainingSeconds > 0) {
+        frameId = window.requestAnimationFrame(tick)
+      }
+    }
+
+    frameId = window.requestAnimationFrame(tick)
 
     return () => {
-      window.clearInterval(intervalId)
+      window.cancelAnimationFrame(frameId)
     }
   }, [isRunning])
 
@@ -166,16 +204,18 @@ export function useTimer(settings) {
       setCompletedPomos(nextCompletedPomos)
       setMode(nextMode)
       setTimeLeft(getModeSeconds(normalizedSettings, nextMode))
+      endTimeRef.current = performance.now() + getModeSeconds(normalizedSettings, nextMode) * 1000
       return
     }
 
     setMode('work')
     setTimeLeft(getModeSeconds(normalizedSettings, 'work'))
+    endTimeRef.current = performance.now() + getModeSeconds(normalizedSettings, 'work') * 1000
   }, [completedPomos, isRunning, mode, normalizedSettings, timeLeft])
 
   useEffect(() => {
-    document.title = `[${formatTime(timeLeft)}] ${MODE_LABELS[mode]} — Pomo`
-  }, [mode, timeLeft])
+    document.title = `[${formatTime(timeLeft)}] ${MODE_LABELS[locale][mode]} — Pomo`
+  }, [locale, mode, timeLeft])
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -226,22 +266,29 @@ export function useTimer(settings) {
       playTick(0)
     }
 
+    endTimeRef.current = performance.now() + stateRef.current.timeLeft * 1000
     setIsRunning(true)
   }
 
   const pause = () => {
     hiddenAtRef.current = null
+    if (endTimeRef.current) {
+      setTimeLeft(Math.max(0, (endTimeRef.current - performance.now()) / 1000))
+    }
+    endTimeRef.current = null
     setIsRunning(false)
   }
 
   const reset = () => {
     hiddenAtRef.current = null
+    endTimeRef.current = null
     setIsRunning(false)
     setTimeLeft(getModeSeconds(normalizedSettings, mode))
   }
 
   const switchMode = (nextMode) => {
     hiddenAtRef.current = null
+    endTimeRef.current = null
     setIsRunning(false)
     setMode(nextMode)
     setTimeLeft(getModeSeconds(normalizedSettings, nextMode))

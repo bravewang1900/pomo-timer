@@ -2,6 +2,14 @@ import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'pomo_tasks'
 
+function createTaskId() {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID()
+  }
+
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
 function readStoredTasks() {
   const storedValue = window.localStorage.getItem(STORAGE_KEY)
 
@@ -45,7 +53,7 @@ export function useTasks() {
     }
 
     const nextTask = {
-      id: Date.now().toString(),
+      id: createTaskId(),
       title: trimmedTitle,
       targetPomos: Number(targetPomos),
       completedPomos: 0,
