@@ -28,7 +28,7 @@ function TaskList({
       <div className={styles.header}>
         <div>
           <p className={styles.eyebrow}>{labels.eyebrow}</p>
-          <h2 className={styles.title}>{labels.title}</h2>
+          {labels.title ? <h2 className={styles.title}>{labels.title}</h2> : null}
         </div>
         <div className={styles.countBadge}>{labels.count(tasks.length)}</div>
       </div>

@@ -17,7 +17,9 @@
   background: transparent;
   color: var(--color-text-light);
   font-family: var(--font-body);
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   cursor: pointer;
   padding: 0 0 10px;
   transition: 0.15s ease;
@@ -239,11 +241,11 @@
 
 .time {
   font-family: var(--font-display);
-  font-size: 52px;
+  font-size: 54px;
   font-variant-numeric: tabular-nums;
   color: var(--color-text);
-  letter-spacing: 0.02em;
-  line-height: 1;
+  letter-spacing: 0.015em;
+  line-height: 0.96;
   transition:
     color 260ms ease,
     opacity 260ms ease,
@@ -324,8 +326,8 @@
   border-radius: 28px;
   font-family: 'Noto Sans SC', sans-serif;
   font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 2.2px;
+  font-weight: 500;
+  letter-spacing: 1.4px;
   text-align: center;
   border: 1.5px solid transparent;
   cursor: pointer;
@@ -387,7 +389,9 @@
   margin: 0;
   color: var(--color-text-light);
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
 }
 
 @keyframes pulseBreath {
@@ -525,7 +529,7 @@
   }
 
   .tab {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .progress,
@@ -555,7 +559,7 @@
   }
 
   .time {
-    font-size: 40px;
+    font-size: 42px;
   }
 
   .controls {
@@ -567,7 +571,7 @@
   .btn {
     min-width: 118px;
     padding: 10px 18px;
-    font-size: 12px;
-    letter-spacing: 1.8px;
+    font-size: 11px;
+    letter-spacing: 1.2px;
   }
 }

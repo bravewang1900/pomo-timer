@@ -5,6 +5,8 @@
 }
 
 .header {
+  position: relative;
+  z-index: 30;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -19,6 +21,7 @@
   font-family: var(--font-display);
   font-size: 32px;
   font-weight: 400;
+  letter-spacing: 0.01em;
   color: var(--color-primary);
 }
 
@@ -44,6 +47,23 @@
   gap: 12px;
 }
 
+.menuButton {
+  display: none;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-strong);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.mobileMenu {
+  display: none;
+}
+
 .iconButton {
   border: 1px solid var(--color-border);
   background-color: var(--color-surface-strong);
@@ -51,6 +71,8 @@
   border-radius: 999px;
   padding: 10px 16px;
   font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.02em;
   cursor: pointer;
   transition:
     border-color 0.15s ease,
@@ -85,18 +107,52 @@
 @media (max-width: 480px) {
   .header {
     padding: 20px 16px;
+    align-items: flex-start;
   }
 
   .logo {
-    font-size: 26px;
+    font-size: 25px;
   }
 
   .actions {
-    gap: 8px;
+    display: none;
   }
 
-  .iconButton {
-    padding: 9px 12px;
+  .menuButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .mobileMenu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 16px;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 168px;
+    padding: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--color-surface-strong) 92%, transparent);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(16px);
+  }
+
+  .mobileMenuButton {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    border-radius: 14px;
+    padding: 10px 12px;
+    text-align: left;
+    font: inherit;
+    font-size: 13px;
+    letter-spacing: 0.01em;
+    cursor: pointer;
   }
 
   .main {

@@ -17,6 +17,8 @@ const COPY = {
       stats: '📊 统计',
       themeDark: '🌙 深色',
       themeLight: '☀️ 浅色',
+      menu: '☰ 菜单',
+      closeMenu: '✕ 关闭',
       language: 'EN',
     },
     timer: {
@@ -34,7 +36,8 @@ const COPY = {
     },
     tasks: {
       eyebrow: 'Focus Tasks',
-      title: '任务区',
+      title: '',
+      toggle: '任务',
       count: (count) => `${count} 项`,
       placeholder: '添加任务...',
       add: '添加',
@@ -68,6 +71,8 @@ const COPY = {
       stats: '📊 Stats',
       themeDark: '🌙 Dark',
       themeLight: '☀️ Light',
+      menu: '☰ Menu',
+      closeMenu: '✕ Close',
       language: '中文',
     },
     timer: {
@@ -85,7 +90,8 @@ const COPY = {
     },
     tasks: {
       eyebrow: 'Focus Tasks',
-      title: 'Tasks',
+      title: '',
+      toggle: 'Tasks',
       count: (count) => `${count} items`,
       placeholder: 'Add a task...',
       add: 'Add',
@@ -120,6 +126,7 @@ function App() {
   const [isStatsView, setIsStatsView] = useState(false)
   const [locale, setLocale] = useState('zh')
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') ?? 'dark')
+  const [isTaskListExpanded, setIsTaskListExpanded] = useState(false)
   const { settings, updateSettings } = useSettings()
   const { history, todayCount, recordPomo } = useHistory()
   const {
@@ -155,6 +162,26 @@ function App() {
     document.documentElement.dataset.theme = theme
     localStorage.setItem('theme', theme)
   }, [theme])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 481px)')
+
+    const handleViewportChange = (event) => {
+      if (event.matches) {
+        setIsTaskListExpanded(true)
+      } else {
+        setIsTaskListExpanded(false)
+      }
+    }
+
+    handleViewportChange(mediaQuery)
+
+    mediaQuery.addEventListener('change', handleViewportChange)
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleViewportChange)
+    }
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -223,10 +250,21 @@ function App() {
             labels={copy.timer}
             {...timer}
           />
+          {timer.mode === 'work' ? (
+            <button
+              type="button"
+              className="taskListToggle"
+              onClick={() => {
+                setIsTaskListExpanded((current) => !current)
+              }}
+            >
+              {copy.tasks.toggle}
+            </button>
+          ) : null}
           <div
             className={`taskListShell ${
               timer.mode === 'work' ? 'taskListShellVisible' : 'taskListShellHidden'
-            }`}
+            } ${isTaskListExpanded ? 'taskListShellExpanded' : 'taskListShellCollapsed'}`}
           >
             <TaskList
               tasks={tasks}

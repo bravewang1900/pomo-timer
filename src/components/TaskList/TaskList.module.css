@@ -8,24 +8,28 @@
 
 .header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
 
 .eyebrow {
-  margin: 0 0 6px;
+  margin: 0;
   color: var(--color-text-light);
   font-size: 11px;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  line-height: 1;
+  opacity: 0.92;
 }
 
 .title {
   margin: 0;
   font-family: var(--font-display);
   font-size: 24px;
-  line-height: 1;
+  line-height: 0.98;
+  letter-spacing: 0.01em;
   color: var(--color-text);
 }
 
@@ -35,8 +39,9 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   color: var(--color-text-light);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
   white-space: nowrap;
   backdrop-filter: blur(10px);
 }
@@ -56,6 +61,8 @@
   padding: 12px 14px;
   background: var(--color-surface);
   color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.4;
   transition:
     border-color 0.18s ease,
     background-color 0.18s ease,
@@ -80,6 +87,9 @@
   color: #fff;
   border-radius: 14px;
   padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   cursor: pointer;
   transition:
     transform 0.15s ease,
@@ -131,6 +141,9 @@
   color: var(--color-text);
   cursor: pointer;
   font: inherit;
+  font-size: 15px;
+  line-height: 1.35;
+  letter-spacing: 0.005em;
   text-align: left;
   transition: color 0.15s ease;
 }
@@ -143,8 +156,9 @@
 .progress {
   margin-top: 4px;
   color: var(--color-text-light);
-  font-size: 13px;
-  letter-spacing: 0.02em;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
 }
 
 .deleteButton {
@@ -153,6 +167,8 @@
   color: var(--color-text);
   border-radius: 999px;
   padding: 8px 12px;
+  font-size: 12px;
+  letter-spacing: 0.01em;
   cursor: pointer;
   transition:
     border-color 0.15s ease,
@@ -164,6 +180,8 @@
   margin: 0;
   padding: 16px 8px;
   color: var(--color-text-light);
+  font-size: 14px;
+  line-height: 1.6;
   text-align: center;
 }
 
@@ -203,7 +221,7 @@
   }
 
   .title {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .composer {

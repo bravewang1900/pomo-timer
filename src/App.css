@@ -6,6 +6,10 @@
     max-height 0.3s ease;
 }
 
+.taskListToggle {
+  display: none;
+}
+
 .taskListShellVisible {
   opacity: 1;
   max-height: 600px;
@@ -16,4 +20,51 @@
   opacity: 0;
   max-height: 0;
   pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .taskListToggle {
+    display: inline-flex;
+    align-self: center;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--color-border);
+    background: color-mix(in srgb, var(--color-surface-strong) 88%, transparent);
+    color: var(--color-text);
+    border-radius: 999px;
+    min-width: 88px;
+    padding: 10px 16px;
+    margin-top: 12px;
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+    transition:
+      border-color 0.18s ease,
+      background-color 0.18s ease,
+      box-shadow 0.18s ease,
+      transform 0.15s ease;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  }
+
+  .taskListToggle:hover {
+    border-color: var(--color-primary);
+    background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  }
+
+  .taskListToggle:active {
+    transform: translateY(1px);
+  }
+
+  .taskListShellVisible.taskListShellCollapsed {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .taskListShellVisible.taskListShellExpanded {
+    max-height: 720px;
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
