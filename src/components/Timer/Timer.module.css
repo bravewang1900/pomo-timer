@@ -1,0 +1,172 @@
+.timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.tab {
+  position: relative;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 0 10px;
+  transition: 0.15s ease;
+}
+
+.tabActive {
+  color: var(--color-text);
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+}
+
+.progress {
+  position: relative;
+  width: 240px;
+  height: 240px;
+}
+
+.progressSvg {
+  display: block;
+  width: 240px;
+  height: 240px;
+  transform: rotate(-90deg);
+}
+
+.track {
+  fill: none;
+  stroke: var(--color-border);
+  stroke-width: 10;
+}
+
+.indicator {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition:
+    stroke-dashoffset 0.3s linear,
+    stroke 0.15s ease;
+}
+
+.time {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 48px;
+  color: var(--color-text);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.primaryButton {
+  border: 1px solid var(--color-primary);
+  background-color: var(--color-primary);
+  color: #fff;
+  border-radius: 999px;
+  padding: 12px 28px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.secondaryButton {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 12px 28px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--color-text);
+}
+
+.tab:active,
+.primaryButton:active,
+.secondaryButton:active {
+  transform: translateY(1px);
+}
+
+.primaryButton:hover {
+  filter: brightness(0.96);
+}
+
+.secondaryButton:hover {
+  border-color: var(--color-primary);
+}
+
+.taskHint {
+  margin: 0;
+  color: var(--color-text-light);
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .timer {
+    gap: 24px;
+  }
+
+  .tabs {
+    gap: 16px;
+  }
+
+  .tab {
+    font-size: 15px;
+  }
+
+  .progress {
+    width: 180px;
+    height: 180px;
+  }
+
+  .progressSvg {
+    width: 180px;
+    height: 180px;
+  }
+
+  .time {
+    font-size: 36px;
+  }
+
+  .controls {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+}

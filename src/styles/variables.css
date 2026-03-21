@@ -1,0 +1,9 @@
+:root {
+  --color-bg: #fafaf8;
+  --color-primary: #e05252;
+  --color-text: #2d2d2d;
+  --color-text-light: #9e9e9e;
+  --color-border: #e8e8e8;
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+}
