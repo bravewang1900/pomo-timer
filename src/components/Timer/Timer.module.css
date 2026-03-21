@@ -23,6 +23,12 @@
   transition: 0.15s ease;
 }
 
+.tab:focus,
+.tab:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 .tabActive {
   color: var(--color-text);
 }
