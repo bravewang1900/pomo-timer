@@ -1,1 +1,19 @@
+.taskListShell {
+  width: 100%;
+  overflow: hidden;
+  transition:
+    opacity 0.3s ease,
+    max-height 0.3s ease;
+}
 
+.taskListShellVisible {
+  opacity: 1;
+  max-height: 600px;
+  pointer-events: auto;
+}
+
+.taskListShellHidden {
+  opacity: 0;
+  max-height: 0;
+  pointer-events: none;
+}

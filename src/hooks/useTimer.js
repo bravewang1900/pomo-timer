@@ -117,6 +117,8 @@ export function useTimer(settings) {
   const [completedPomos, setCompletedPomos] = useState(0)
   const hasInitializedAudioRef = useRef(false)
   const hiddenAtRef = useRef(null)
+  const hiddenTickAtRef = useRef(null)
+  const hiddenIntervalRef = useRef(null)
   const endTimeRef = useRef(null)
   const stateRef = useRef({
     mode: 'work',
@@ -218,24 +220,15 @@ export function useTimer(settings) {
   }, [locale, mode, timeLeft])
 
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        if (stateRef.current.isRunning) {
-          hiddenAtRef.current = Date.now()
-        }
-
-        return
+    const stopHiddenSync = () => {
+      if (hiddenIntervalRef.current) {
+        window.clearInterval(hiddenIntervalRef.current)
+        hiddenIntervalRef.current = null
       }
+    }
 
-      if (!hiddenAtRef.current || !stateRef.current.isRunning) {
-        hiddenAtRef.current = null
-        return
-      }
-
-      const elapsedSeconds = Math.floor((Date.now() - hiddenAtRef.current) / 1000)
-      hiddenAtRef.current = null
-
-      if (elapsedSeconds <= 0) {
+    const syncHiddenProgress = (elapsedSeconds) => {
+      if (!stateRef.current.isRunning || elapsedSeconds <= 0) {
         return
       }
 
@@ -251,14 +244,63 @@ export function useTimer(settings) {
       setMode(nextState.mode)
       setTimeLeft(nextState.timeLeft)
       setCompletedPomos(nextState.completedPomos)
+      endTimeRef.current = performance.now() + nextState.timeLeft * 1000
+      document.title = `[${formatTime(nextState.timeLeft)}] ${MODE_LABELS[locale][nextState.mode]} — Pomo`
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (stateRef.current.isRunning) {
+          hiddenAtRef.current = Date.now()
+          hiddenTickAtRef.current = hiddenAtRef.current
+          stopHiddenSync()
+          hiddenIntervalRef.current = window.setInterval(() => {
+            if (!hiddenTickAtRef.current) {
+              return
+            }
+
+            const now = Date.now()
+            const elapsedSeconds = Math.floor((now - hiddenTickAtRef.current) / 1000)
+
+            if (elapsedSeconds <= 0) {
+              return
+            }
+
+            hiddenTickAtRef.current += elapsedSeconds * 1000
+            syncHiddenProgress(elapsedSeconds)
+          }, 1000)
+        }
+
+        return
+      }
+
+      stopHiddenSync()
+
+      if (!hiddenAtRef.current || !stateRef.current.isRunning) {
+        hiddenAtRef.current = null
+        hiddenTickAtRef.current = null
+        return
+      }
+
+      const referenceTime = hiddenTickAtRef.current ?? hiddenAtRef.current
+      const elapsedSeconds = Math.floor((Date.now() - referenceTime) / 1000)
+      hiddenAtRef.current = null
+      hiddenTickAtRef.current = null
+
+      if (elapsedSeconds <= 0) {
+        return
+      }
+
+      syncHiddenProgress(elapsedSeconds)
     }
 
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
+      stopHiddenSync()
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [])
+  }, [locale])
 
   const start = () => {
     if (!hasInitializedAudioRef.current) {
@@ -271,7 +313,12 @@ export function useTimer(settings) {
   }
 
   const pause = () => {
+    if (hiddenIntervalRef.current) {
+      window.clearInterval(hiddenIntervalRef.current)
+      hiddenIntervalRef.current = null
+    }
     hiddenAtRef.current = null
+    hiddenTickAtRef.current = null
     if (endTimeRef.current) {
       setTimeLeft(Math.max(0, (endTimeRef.current - performance.now()) / 1000))
     }
@@ -280,14 +327,24 @@ export function useTimer(settings) {
   }
 
   const reset = () => {
+    if (hiddenIntervalRef.current) {
+      window.clearInterval(hiddenIntervalRef.current)
+      hiddenIntervalRef.current = null
+    }
     hiddenAtRef.current = null
+    hiddenTickAtRef.current = null
     endTimeRef.current = null
     setIsRunning(false)
     setTimeLeft(getModeSeconds(normalizedSettings, mode))
   }
 
   const switchMode = (nextMode) => {
+    if (hiddenIntervalRef.current) {
+      window.clearInterval(hiddenIntervalRef.current)
+      hiddenIntervalRef.current = null
+    }
     hiddenAtRef.current = null
+    hiddenTickAtRef.current = null
     endTimeRef.current = null
     setIsRunning(false)
     setMode(nextMode)

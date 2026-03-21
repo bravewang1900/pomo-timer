@@ -38,6 +38,7 @@
 }
 
 .progress {
+  --bg: #fafaf8;
   --track-color: rgba(56, 47, 44, 0.08);
   --track-inner-color: rgba(56, 47, 44, 0.05);
   --disk-glow-color: 224, 82, 82;
@@ -57,27 +58,16 @@
   height: 268px;
 }
 
-.progressFrame::after {
-  content: '';
-  position: absolute;
-  inset: 12px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0) 52%, rgba(249, 244, 240, 0.1) 66%, rgba(243, 236, 231, 0.18) 76%, rgba(255, 255, 255, 0) 90%);
-  pointer-events: none;
-  z-index: 2;
-}
-
 .halo {
   position: absolute;
-  inset: -18px;
+  inset: -2px;
   border-radius: 50%;
   z-index: 0;
   animation:
     pulseBreath var(--timer-pulse-duration, 4s) ease-in-out infinite,
     haloDrift 8s ease-in-out infinite;
   animation-play-state: paused;
-  filter: blur(24px);
+  filter: blur(30px);
   opacity: 1;
   will-change: transform, opacity, filter;
   transition:
@@ -85,7 +75,7 @@
     opacity 260ms ease,
     filter 260ms ease;
   background:
-    radial-gradient(circle, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.66) 0%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.42) 22%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.24) 42%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.12) 60%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.04) 78%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0) 94%);
+    radial-gradient(circle, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.82) 0%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.6) 28%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.34) 50%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.14) 68%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0.04) 84%, rgba(var(--timer-accent-rgb, 224, 82, 82), 0) 100%);
 }
 
 .haloRunning {
@@ -94,6 +84,9 @@
 
 .haloPaused {
   animation-play-state: paused;
+  transform: scale(1);
+  opacity: 0.3;
+  transition: transform 0.6s ease, opacity 0.6s ease;
 }
 
 .shell,
@@ -106,11 +99,11 @@
 }
 
 .shell {
-  inset: 10px;
+  inset: 14px;
   background:
-    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.92), rgba(250, 247, 244, 0.84) 50%, rgba(241, 236, 232, 0.78) 74%, rgba(233, 227, 222, 0.72) 100%);
+    radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--bg) 96%, transparent), color-mix(in srgb, var(--bg) 88%, transparent) 50%, color-mix(in srgb, var(--bg) 60%, transparent) 74%, color-mix(in srgb, var(--bg) 15%, transparent) 88%, transparent 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    inset 0 1px 0 color-mix(in srgb, var(--bg) 72%, transparent),
     inset 0 -18px 28px rgba(70, 47, 35, 0.035),
     0 20px 42px rgba(32, 18, 12, 0.045);
   z-index: 0;
@@ -161,14 +154,14 @@
 }
 
 .centerDisk {
-  inset: 42px;
+  inset: 48px;
   transition:
     box-shadow 260ms ease,
     background 260ms ease;
   background:
-    radial-gradient(circle at 50% 38%, rgba(255, 255, 255, 0.9), rgba(250, 247, 244, 0.7) 54%, rgba(239, 234, 229, 0.42) 100%);
+    radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--bg) 90%, transparent), color-mix(in srgb, var(--bg) 68%, transparent) 50%, color-mix(in srgb, var(--bg) 22%, transparent) 78%, transparent 100%);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.68),
+    inset 0 1px 1px color-mix(in srgb, var(--bg) 68%, transparent),
     inset 0 -16px 30px rgba(var(--disk-glow-color), 0.05);
   z-index: 1;
 }
@@ -193,7 +186,7 @@
 .track {
   stroke: var(--track-color);
   stroke-width: 7;
-  opacity: 0.72;
+  opacity: 0.48;
 }
 
 .trackInner {
@@ -205,7 +198,7 @@
 
 .indicator {
   stroke: var(--timer-accent, #E05252);
-  stroke-width: 9;
+  stroke-width: 10;
   stroke-linecap: round;
   shape-rendering: geometricPrecision;
   transition:
@@ -214,15 +207,15 @@
     stroke-width 0.2s ease;
   will-change: stroke-dashoffset, filter;
   filter:
-    drop-shadow(0 0 7px rgba(var(--timer-accent-rgb, 224, 82, 82), 0.24))
-    drop-shadow(0 0 20px rgba(var(--timer-accent-rgb, 224, 82, 82), 0.16));
+    drop-shadow(0 0 10px rgba(var(--timer-accent-rgb, 224, 82, 82), 0.34))
+    drop-shadow(0 0 24px rgba(var(--timer-accent-rgb, 224, 82, 82), 0.2));
 }
 
 .indicatorGhost {
   stroke: rgba(var(--timer-accent-rgb, 224, 82, 82), 0.2);
   stroke-width: 14px;
   stroke-linecap: round;
-  opacity: 0.42;
+  opacity: 0.22;
   shape-rendering: geometricPrecision;
   transition:
     stroke 260ms ease,
@@ -241,6 +234,7 @@
 .time {
   font-family: var(--font-display);
   font-size: 52px;
+  font-variant-numeric: tabular-nums;
   color: var(--color-text);
   letter-spacing: 0.02em;
   line-height: 1;
@@ -274,9 +268,9 @@
 .progressShortBreak .shell,
 .progressLongBreak .shell {
   background:
-    radial-gradient(circle at 34% 28%, rgba(252, 255, 252, 0.92), rgba(244, 249, 244, 0.8) 50%, rgba(232, 240, 233, 0.72) 74%, rgba(223, 233, 224, 0.64) 100%);
+    radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--bg) 96%, transparent), color-mix(in srgb, var(--bg) 88%, transparent) 50%, color-mix(in srgb, var(--bg) 60%, transparent) 74%, color-mix(in srgb, var(--bg) 15%, transparent) 88%, transparent 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    inset 0 1px 0 color-mix(in srgb, var(--bg) 68%, transparent),
     inset 0 -20px 34px rgba(54, 87, 60, 0.03),
     0 18px 36px rgba(28, 44, 31, 0.04);
 }
@@ -291,9 +285,9 @@
 .progressShortBreak .centerDisk,
 .progressLongBreak .centerDisk {
   background:
-    radial-gradient(circle at 50% 38%, rgba(251, 255, 251, 0.84), rgba(244, 249, 244, 0.62) 56%, rgba(229, 237, 229, 0.34) 100%);
+    radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--bg) 90%, transparent), color-mix(in srgb, var(--bg) 68%, transparent) 50%, color-mix(in srgb, var(--bg) 22%, transparent) 78%, transparent 100%);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.62),
+    inset 0 1px 1px color-mix(in srgb, var(--bg) 68%, transparent),
     inset 0 -18px 34px rgba(76, 175, 80, 0.045);
 }
 
@@ -417,11 +411,11 @@
 @keyframes innerPulseScale {
   0%,
   100% {
-    transform: scale(0.12);
+    transform: scale(0.6);
   }
 
   50% {
-    transform: scale(1.72);
+    transform: scale(1.1);
   }
 }
 
@@ -450,8 +444,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .halo {
+  .halo,
+  .innerPulse,
+  .innerGlow,
+  .progressRunning .innerGlow {
     animation: none;
+    transition: none;
+    transform: none;
+    opacity: 0;
   }
 }
 
@@ -474,13 +474,9 @@
     height: 224px;
   }
 
-  .progressFrame::after {
-    inset: 10px;
-  }
-
   .halo {
-    inset: -10px;
-    filter: blur(18px);
+    inset: 0;
+    filter: blur(22px);
   }
 
   .innerPulse {
@@ -495,7 +491,7 @@
   }
 
   .centerDisk {
-    inset: 36px;
+    inset: 40px;
   }
 
   .time {

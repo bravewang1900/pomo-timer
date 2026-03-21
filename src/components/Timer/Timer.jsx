@@ -31,6 +31,8 @@ function Timer({
   reset,
   switchMode,
 }) {
+  const haloRef = useRef(null)
+  const innerPulseRef = useRef(null)
   const indicatorRef = useRef(null)
   const indicatorGhostRef = useRef(null)
   const visualFrameRef = useRef(0)
@@ -52,6 +54,28 @@ function Timer({
   const accentRgb = mode === 'work' ? '224, 82, 82' : '76, 175, 80'
   const pulseDuration = mode === 'work' ? '4s' : '6s'
   const haloClassName = [styles.halo, isRunning ? styles.haloRunning : styles.haloPaused].join(' ')
+
+  useEffect(() => {
+    if (!isRunning) {
+      return undefined
+    }
+
+    const resetAnimationPhase = (element, runningClassName) => {
+      if (!element) {
+        return
+      }
+
+      element.classList.remove(runningClassName)
+      window.requestAnimationFrame(() => {
+        element.classList.add(runningClassName)
+      })
+    }
+
+    resetAnimationPhase(haloRef.current, styles.haloRunning)
+    resetAnimationPhase(innerPulseRef.current, styles.running)
+
+    return undefined
+  }, [isRunning, mode])
 
   useEffect(() => {
     const applyDashOffset = (nextDashOffset) => {
@@ -125,6 +149,7 @@ function Timer({
 
       <div className={styles.progressFrame}>
         <div
+          ref={haloRef}
           className={haloClassName}
           style={{
             '--timer-accent': accentColor,
@@ -143,6 +168,7 @@ function Timer({
         >
           <div className={styles.shell} aria-hidden="true" />
           <div
+            ref={innerPulseRef}
             className={`${styles.innerPulse} ${pulseStateClass}`}
             aria-hidden="true"
           />

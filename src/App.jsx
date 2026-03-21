@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import './App.css'
 import Layout from './components/Layout/Layout'
 import SettingsModal from './components/SettingsModal/SettingsModal'
 import StatsView from './components/StatsView/StatsView'
@@ -141,6 +142,43 @@ function App() {
     },
   })
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const target = event.target
+      const isFormField =
+        target instanceof HTMLElement &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable)
+
+      if (isFormField) {
+        return
+      }
+
+      if (event.code === 'Space') {
+        event.preventDefault()
+
+        if (timer.isRunning) {
+          timer.pause()
+          return
+        }
+
+        timer.start()
+        return
+      }
+
+      if (event.key.toLowerCase() === 'r') {
+        timer.reset()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [timer])
+
   return (
     <Layout
       labels={copy.layout}
@@ -168,7 +206,11 @@ function App() {
             labels={copy.timer}
             {...timer}
           />
-          {timer.mode === 'work' ? (
+          <div
+            className={`taskListShell ${
+              timer.mode === 'work' ? 'taskListShellVisible' : 'taskListShellHidden'
+            }`}
+          >
             <TaskList
               tasks={tasks}
               activeTaskId={activeTaskId}
@@ -178,7 +220,7 @@ function App() {
               onToggleDone={toggleDone}
               onSetActive={setActiveTask}
             />
-          ) : null}
+          </div>
         </>
       )}
       <SettingsModal
