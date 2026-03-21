@@ -6,6 +6,7 @@ function Layout({
   onGoHome,
   onOpenSettings,
   onToggleStats,
+  onToggleTheme,
   onToggleLanguage,
 }) {
   return (
@@ -28,6 +29,13 @@ function Layout({
             onClick={onToggleStats}
           >
             {labels.stats}
+          </button>
+          <button
+            type="button"
+            className={styles.iconButton}
+            onClick={onToggleTheme}
+          >
+            {labels.theme}
           </button>
           <button
             type="button"

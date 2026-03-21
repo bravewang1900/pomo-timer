@@ -15,6 +15,8 @@ const COPY = {
     layout: {
       settings: '⚙️ 设置',
       stats: '📊 统计',
+      themeDark: '🌙 深色',
+      themeLight: '☀️ 浅色',
       language: 'EN',
     },
     timer: {
@@ -64,6 +66,8 @@ const COPY = {
     layout: {
       settings: '⚙️ Settings',
       stats: '📊 Stats',
+      themeDark: '🌙 Dark',
+      themeLight: '☀️ Light',
       language: '中文',
     },
     timer: {
@@ -115,6 +119,7 @@ function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isStatsView, setIsStatsView] = useState(false)
   const [locale, setLocale] = useState('zh')
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') ?? 'dark')
   const { settings, updateSettings } = useSettings()
   const { history, todayCount, recordPomo } = useHistory()
   const {
@@ -128,6 +133,10 @@ function App() {
   } = useTasks()
   const activeTask = tasks.find((task) => task.id === activeTaskId) ?? null
   const copy = COPY[locale]
+  const layoutLabels = {
+    ...copy.layout,
+    theme: theme === 'dark' ? copy.layout.themeLight : copy.layout.themeDark,
+  }
   const timer = useTimer({
     ...settings,
     locale,
@@ -141,6 +150,11 @@ function App() {
       }
     },
   })
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem('theme', theme)
+  }, [theme])
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -181,7 +195,7 @@ function App() {
 
   return (
     <Layout
-      labels={copy.layout}
+      labels={layoutLabels}
       onGoHome={() => {
         setIsStatsView(false)
         setIsSettingsOpen(false)
@@ -191,6 +205,9 @@ function App() {
       }}
       onToggleStats={() => {
         setIsStatsView((current) => !current)
+      }}
+      onToggleTheme={() => {
+        setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
       }}
       onToggleLanguage={() => {
         setLocale((current) => (current === 'zh' ? 'en' : 'zh'))

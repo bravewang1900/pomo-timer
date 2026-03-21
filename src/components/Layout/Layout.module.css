@@ -10,6 +10,9 @@
   justify-content: space-between;
   padding: 24px 32px;
   border-bottom: 1px solid var(--color-border);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 72%, transparent), transparent);
+  backdrop-filter: blur(14px);
 }
 
 .logo {
@@ -43,13 +46,19 @@
 
 .iconButton {
   border: 1px solid var(--color-border);
-  background-color: #fff;
+  background-color: var(--color-surface-strong);
   color: var(--color-text);
   border-radius: 999px;
   padding: 10px 16px;
   font: inherit;
   cursor: pointer;
-  transition: 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
 }
 
 .languageButton {
@@ -59,6 +68,8 @@
 
 .iconButton:hover {
   border-color: var(--color-primary);
+  background-color: var(--color-surface);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
 }
 
 .iconButton:active {
