@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './TaskList.module.css'
+
+const COLLAPSED_LIMIT = 5
 
 function TaskList({
   tasks,
@@ -9,12 +11,30 @@ function TaskList({
   onDelete,
   onToggleDone,
   onSetActive,
+  onReorder,
 }) {
   const [title, setTitle] = useState('')
   const [targetPomos, setTargetPomos] = useState(1)
-  const sortedTasks = [...tasks].sort(
-    (left, right) => (right.createdAt ?? 0) - (left.createdAt ?? 0),
-  )
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [draggedTaskId, setDraggedTaskId] = useState(null)
+  const [dragTargetTaskId, setDragTargetTaskId] = useState(null)
+  const hasOverflow = tasks.length > COLLAPSED_LIMIT
+  const visibleTasks =
+    hasOverflow && !isExpanded
+      ? tasks.slice(0, COLLAPSED_LIMIT)
+      : tasks
+
+  useEffect(() => {
+    if (!hasOverflow && isExpanded) {
+      setIsExpanded(false)
+    }
+  }, [hasOverflow, isExpanded])
+
+  useEffect(() => {
+    if (!visibleTasks.some((task) => task.id === dragTargetTaskId)) {
+      setDragTargetTaskId(null)
+    }
+  }, [dragTargetTaskId, visibleTasks])
 
   const handleSubmit = () => {
     if (!title.trim()) {
@@ -74,63 +94,130 @@ function TaskList({
       {tasks.length === 0 ? (
         <p className={styles.empty}>{labels.empty}</p>
       ) : (
-        <div className={styles.items}>
-          {sortedTasks.map((task) => (
-            <div
-              key={task.id}
-              className={`${styles.item} ${
-                activeTaskId === task.id ? styles.itemActive : ''
-              }`}
-              onPointerDown={() => onSetActive(task.id)}
-              onClick={() => onSetActive(task.id)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault()
-                  onSetActive(task.id)
-                }
-              }}
-              role="button"
-              tabIndex={0}
-            >
-              <input
-                className={styles.checkbox}
-                type="checkbox"
-                checked={task.done}
-                onChange={() => onToggleDone(task.id)}
-                onClick={(event) => {
-                  event.stopPropagation()
+        <>
+          <div className={styles.items}>
+            {visibleTasks.map((task) => (
+              <div
+                key={task.id}
+                className={`${styles.item} ${
+                  activeTaskId === task.id ? styles.itemActive : ''
+                } ${draggedTaskId === task.id ? styles.itemDragging : ''} ${
+                  dragTargetTaskId === task.id ? styles.itemDropTarget : ''
+                }`}
+                draggable
+                onDragStart={(event) => {
+                  setDraggedTaskId(task.id)
+                  setDragTargetTaskId(task.id)
+                  event.dataTransfer.effectAllowed = 'move'
+                  event.dataTransfer.setData('text/plain', task.id)
                 }}
-              />
-              <div className={styles.content}>
-                <button
-                  type="button"
-                  className={`${styles.titleButton} ${
-                    task.done ? styles.titleDone : ''
-                  }`}
+                onDragOver={(event) => {
+                  event.preventDefault()
+                  if (draggedTaskId && draggedTaskId !== task.id) {
+                    event.dataTransfer.dropEffect = 'move'
+                    setDragTargetTaskId(task.id)
+                  }
+                }}
+                onDrop={(event) => {
+                  event.preventDefault()
+                  const sourceTaskId = event.dataTransfer.getData('text/plain') || draggedTaskId
+                  onReorder(sourceTaskId, task.id)
+                  setDraggedTaskId(null)
+                  setDragTargetTaskId(null)
+                }}
+                onDragEnd={() => {
+                  setDraggedTaskId(null)
+                  setDragTargetTaskId(null)
+                }}
+                onPointerDown={() => onSetActive(task.id)}
+                onClick={() => onSetActive(task.id)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    onSetActive(task.id)
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+              >
+                <input
+                  className={styles.checkbox}
+                  type="checkbox"
+                  checked={task.done}
+                  onChange={() => onToggleDone(task.id)}
                   onClick={(event) => {
                     event.stopPropagation()
-                    onSetActive(task.id)
+                  }}
+                />
+                <div className={styles.content}>
+                  <button
+                    type="button"
+                    className={`${styles.titleButton} ${
+                      task.done ? styles.titleDone : ''
+                    }`}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onSetActive(task.id)
+                    }}
+                  >
+                    {task.title}
+                  </button>
+                  <div className={styles.progress}>
+                    {labels.progress(task.completedPomos, task.targetPomos)}
+                  </div>
+                </div>
+                <div
+                  className={styles.dragHandle}
+                  aria-label={labels.drag}
+                  title={labels.drag}
+                  onClick={(event) => {
+                    event.stopPropagation()
                   }}
                 >
-                  {task.title}
-                </button>
-                <div className={styles.progress}>
-                  {labels.progress(task.completedPomos, task.targetPomos)}
+                  <span />
+                  <span />
+                  <span />
                 </div>
+                <button
+                  type="button"
+                  className={styles.deleteButton}
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    onDelete(task.id)
+                  }}
+                >
+                  {labels.delete}
+                </button>
               </div>
+            ))}
+          </div>
+          {hasOverflow && !isExpanded ? (
+            <div className={styles.actions}>
               <button
                 type="button"
-                className={styles.deleteButton}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  onDelete(task.id)
+                className={styles.expandButton}
+                onClick={() => {
+                  setIsExpanded(true)
                 }}
               >
-                {labels.delete}
+                {labels.expand(tasks.length - COLLAPSED_LIMIT)}
               </button>
             </div>
-          ))}
-        </div>
+          ) : null}
+          {hasOverflow && isExpanded ? (
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.expandButton}
+                onClick={() => {
+                  setIsExpanded(false)
+                }}
+              >
+                {labels.collapse}
+              </button>
+            </div>
+          ) : null}
+        </>
       )}
     </section>
   )

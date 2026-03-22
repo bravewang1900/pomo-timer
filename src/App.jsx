@@ -43,7 +43,10 @@ const COPY = {
       add: '添加',
       empty: '还没有任务，添加一个开始吧。',
       progress: (completed, target) => `🍅 ${completed}/${target}`,
+      drag: '拖拽排序',
       delete: '删除',
+      expand: (count) => `展开其余 ${count} 项`,
+      collapse: '收起列表',
     },
     settings: {
       title: '设置',
@@ -97,7 +100,10 @@ const COPY = {
       add: 'Add',
       empty: 'No tasks yet. Add one to begin.',
       progress: (completed, target) => `🍅 ${completed}/${target}`,
+      drag: 'Drag to reorder',
       delete: 'Delete',
+      expand: (count) => `Show ${count} more`,
+      collapse: 'Show less',
     },
     settings: {
       title: 'Settings',
@@ -137,6 +143,7 @@ function App() {
     toggleDone,
     incrementPomo,
     setActiveTask,
+    reorderTasks,
   } = useTasks()
   const activeTask = tasks.find((task) => task.id === activeTaskId) ?? null
   const copy = COPY[locale]
@@ -274,6 +281,7 @@ function App() {
               onDelete={deleteTask}
               onToggleDone={toggleDone}
               onSetActive={setActiveTask}
+              onReorder={reorderTasks}
             />
           </div>
         </>

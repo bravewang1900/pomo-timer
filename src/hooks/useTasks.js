@@ -23,15 +23,18 @@ function readStoredTasks() {
   try {
     const parsedValue = JSON.parse(storedValue)
     const storedTasks = Array.isArray(parsedValue.tasks) ? parsedValue.tasks : []
+    const normalizedTasks = storedTasks.map((task, index) => ({
+      ...task,
+      createdAt:
+        Number.isFinite(task?.createdAt) && task.createdAt > 0
+          ? task.createdAt
+          : index,
+    }))
 
     return {
-      tasks: storedTasks.map((task, index) => ({
-        ...task,
-        createdAt:
-          Number.isFinite(task?.createdAt) && task.createdAt > 0
-            ? task.createdAt
-            : index,
-      })),
+      tasks: normalizedTasks.sort(
+        (left, right) => (right.createdAt ?? 0) - (left.createdAt ?? 0),
+      ),
       activeTaskId: parsedValue.activeTaskId ?? null,
     }
   } catch {
@@ -69,7 +72,7 @@ export function useTasks() {
     }
 
     setTaskState((current) => ({
-      tasks: [...current.tasks, nextTask],
+      tasks: [nextTask, ...current.tasks],
       activeTaskId: current.activeTaskId ?? nextTask.id,
     }))
   }
@@ -112,6 +115,30 @@ export function useTasks() {
     }))
   }
 
+  const reorderTasks = (draggedTaskId, targetTaskId) => {
+    if (!draggedTaskId || !targetTaskId || draggedTaskId === targetTaskId) {
+      return
+    }
+
+    setTaskState((current) => {
+      const draggedIndex = current.tasks.findIndex((task) => task.id === draggedTaskId)
+      const targetIndex = current.tasks.findIndex((task) => task.id === targetTaskId)
+
+      if (draggedIndex < 0 || targetIndex < 0) {
+        return current
+      }
+
+      const nextTasks = [...current.tasks]
+      const [draggedTask] = nextTasks.splice(draggedIndex, 1)
+      nextTasks.splice(targetIndex, 0, draggedTask)
+
+      return {
+        ...current,
+        tasks: nextTasks,
+      }
+    })
+  }
+
   return {
     tasks,
     activeTaskId,
@@ -120,5 +147,6 @@ export function useTasks() {
     toggleDone,
     incrementPomo,
     setActiveTask,
+    reorderTasks,
   }
 }

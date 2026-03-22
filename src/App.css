@@ -12,7 +12,7 @@
 
 .taskListShellVisible {
   opacity: 1;
-  max-height: 600px;
+  max-height: 1200px;
   pointer-events: auto;
 }
 
@@ -63,7 +63,7 @@
   }
 
   .taskListShellVisible.taskListShellExpanded {
-    max-height: 720px;
+    max-height: 1200px;
     opacity: 1;
     pointer-events: auto;
   }
