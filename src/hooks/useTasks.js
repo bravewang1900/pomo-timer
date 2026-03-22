@@ -22,9 +22,16 @@ function readStoredTasks() {
 
   try {
     const parsedValue = JSON.parse(storedValue)
+    const storedTasks = Array.isArray(parsedValue.tasks) ? parsedValue.tasks : []
 
     return {
-      tasks: Array.isArray(parsedValue.tasks) ? parsedValue.tasks : [],
+      tasks: storedTasks.map((task, index) => ({
+        ...task,
+        createdAt:
+          Number.isFinite(task?.createdAt) && task.createdAt > 0
+            ? task.createdAt
+            : index,
+      })),
       activeTaskId: parsedValue.activeTaskId ?? null,
     }
   } catch {
@@ -54,6 +61,7 @@ export function useTasks() {
 
     const nextTask = {
       id: createTaskId(),
+      createdAt: Date.now(),
       title: trimmedTitle,
       targetPomos: Number(targetPomos),
       completedPomos: 0,

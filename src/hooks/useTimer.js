@@ -187,7 +187,7 @@ export function useTimer(settings) {
     return () => {
       window.cancelAnimationFrame(frameId)
     }
-  }, [isRunning])
+  }, [isRunning, mode])
 
   useEffect(() => {
     if (!isRunning || timeLeft !== 0) {
@@ -345,10 +345,12 @@ export function useTimer(settings) {
     }
     hiddenAtRef.current = null
     hiddenTickAtRef.current = null
-    endTimeRef.current = null
-    setIsRunning(false)
+    const nextTimeLeft = getModeSeconds(normalizedSettings, nextMode)
+    endTimeRef.current = stateRef.current.isRunning
+      ? performance.now() + nextTimeLeft * 1000
+      : null
     setMode(nextMode)
-    setTimeLeft(getModeSeconds(normalizedSettings, nextMode))
+    setTimeLeft(nextTimeLeft)
   }
 
   return {

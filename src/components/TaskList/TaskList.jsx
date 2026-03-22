@@ -12,6 +12,9 @@ function TaskList({
 }) {
   const [title, setTitle] = useState('')
   const [targetPomos, setTargetPomos] = useState(1)
+  const sortedTasks = [...tasks].sort(
+    (left, right) => (right.createdAt ?? 0) - (left.createdAt ?? 0),
+  )
 
   const handleSubmit = () => {
     if (!title.trim()) {
@@ -72,12 +75,13 @@ function TaskList({
         <p className={styles.empty}>{labels.empty}</p>
       ) : (
         <div className={styles.items}>
-          {tasks.map((task) => (
+          {sortedTasks.map((task) => (
             <div
               key={task.id}
               className={`${styles.item} ${
                 activeTaskId === task.id ? styles.itemActive : ''
               }`}
+              onPointerDown={() => onSetActive(task.id)}
               onClick={() => onSetActive(task.id)}
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
